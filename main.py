@@ -1,6 +1,7 @@
 # Imports from Python
 from datetime import date, datetime
 from typing import Optional
+from unittest import result
 from uuid import UUID
 import json
 
@@ -252,8 +253,10 @@ def show_tweet():
                 summary="Delete a Tweet",
                 tags=["Tweets"]
             )
-def delete_tweet():
-    pass
+def delete_tweet(tweet_id: UUID = Path(..., title="Tweet ID", description="Here you need put the tweet ID", example="3fab5f64-5717-4562-b3fc-2c963f66afa8")):
+    with open("tweets.json","r", encoding='utf-8') as f:
+        results = json.loads(f.read())
+        results_with_tweet_deleted = 
 
 ### Update a Tweet
 @app.put(
