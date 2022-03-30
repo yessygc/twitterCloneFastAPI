@@ -277,5 +277,24 @@ def delete_tweet(tweet_id: UUID = Path(..., title="Tweet ID", description="Here 
             summary="Update a Tweet",
             tags=["Tweets"]
         )
-def update_tweet():
-    pass
+def update_tweet(tweet_id: UUID = Path(..., title="Tweet ID", description="Here you need put the tweet ID", example="3fab5f64-5717-4562-b3fc-2c963f66afa8"), tweet: Tweet = Body(...)):
+    with open("tweets.json", "r", encoding="utf-8") as f:
+        results = json.loads(f.read())
+    tweet_new = tweet.dict()
+    tweet_founded = [tweet for tweet in results if tweet["tweet_id"] == str(tweet_id)][0]
+    index_tweet = results.index(tweet_founded)
+    results[index_tweet]["content"] = str(tweet_new["content"])
+    results[index_tweet]["created_at"] = str(tweet_new["created_at"])
+    results[index_tweet]["update_at"] = str(tweet_new["update_at"])
+    results[index_tweet]["by"]["user_id"] = str(tweet_new["by"]["user_id"])
+    results[index_tweet]["by"]["email"] = str(tweet_new["by"]["email"])
+    results[index_tweet]["by"]["first_name"] = str(tweet_new["by"]["first_name"])
+    results[index_tweet]["by"]["last_name"] = str(tweet_new["by"]["last_name"])
+    results[index_tweet]["by"]["birth_date"] = str(tweet_new["by"]["birth_date"])
+    with open("tweets.json", "w", encoding="utf-8") as f:
+        f.write(json.dumps(results))
+    return Tweet(tweet_id=str(tweet_id),
+                content=str(tweet_new["content"]),
+                created_at=str(tweet_new["created_at"]),
+                updated_at=str(tweet_new["update_at"]),
+                by=tweet_new["by"])
