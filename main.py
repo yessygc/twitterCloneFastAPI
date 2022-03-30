@@ -245,8 +245,15 @@ def post_tweet():
             summary="Show a Tweet",
             tags=["Tweets"]
         )
-def show_tweet():
-    pass
+def show_tweet(tweet_id: UUID = Path(..., title="Tweet ID", description="Here you need put the tweet ID", example="3fab5f64-5717-4562-b3fc-2c963f66afa8")):
+    with open("tweets.json", "r", encoding="utf-8") as f:
+        results = json.loads(f.read())
+    tweet = [tweet for tweet in results if tweet["tweet_id"] == str(tweet_id)]
+    return Tweet(tweet_id=tweet[0]["tweet_id"],
+                content=tweet[0]["content"],
+                created_at=tweet[0]["created_at"],
+                updated_at=tweet[0]["update_at"],
+                by=tweet[0]["by"])
 
 ### Delete a Tweet
 @app.delete(
