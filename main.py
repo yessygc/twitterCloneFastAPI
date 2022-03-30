@@ -222,7 +222,9 @@ def update_a_user(user_id: UUID = Path(
             tags=["Tweets"]
         )
 def home():
-    return {"Twitter API": "Working!"}
+    with open("tweets.json", "r", encoding="utf-8") as f:
+        results = json.loads(f.read())
+        return results
 
 ### Post Tweet
 @app.post(
@@ -256,7 +258,16 @@ def show_tweet():
 def delete_tweet(tweet_id: UUID = Path(..., title="Tweet ID", description="Here you need put the tweet ID", example="3fab5f64-5717-4562-b3fc-2c963f66afa8")):
     with open("tweets.json","r", encoding='utf-8') as f:
         results = json.loads(f.read())
-        results_with_tweet_deleted = 
+        results_with_tweet_deleted = [tweet for tweet in results if tweet["tweet_id"] != str(tweet_id) ]
+        tweet_to_delete = [tweet for tweet in results if tweet["tweet_id"] == str(tweet_id) ]
+    if len(tweet_to_delete) == 0:
+        return {"message": f"The Tweet with {tweet_id} ID not found"}
+    else:
+        with open("tweets.json", "w", encoding="utf-8") as f:
+            f.seek(0)
+            f.write(json.dumps(results_with_tweet_deleted))
+        return {"message": f"The Tweet with {tweet_id} ID was deleted"}
+
 
 ### Update a Tweet
 @app.put(
